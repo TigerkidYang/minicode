@@ -1,26 +1,34 @@
 import json
+
 from provider import LLMProvider
+
 from tools.read import read_file, READ_FILE_TOOL
 from tools.write import write_file, WRITE_FILE_TOOL
 from tools.bash import execute_bash, BASH_TOOL
+from tools.search import search_code, SEARCH_TOOL
+from tools.edit import edit_file, EDIT_FILE_TOOL
+
+from prompts import SYSTEM_PROMPT
 
 class MinicodeAgent:
     
     def __init__(self):
         self.provider = LLMProvider()
 
-        self.system_prompt = "You are MiniCode, an senior programer. You have access to many tools. You should use them to write file, read file, execute code, see the error and fix them autonomously."
+        self.system_prompt = SYSTEM_PROMPT
 
         self.messages = [
             {"role": "system", "content": self.system_prompt}
         ]
 
-        self.tools = [READ_FILE_TOOL, WRITE_FILE_TOOL, BASH_TOOL]
+        self.tools = [READ_FILE_TOOL, WRITE_FILE_TOOL, BASH_TOOL, SEARCH_TOOL, EDIT_FILE_TOOL]
 
         self.tool_map = {
             "read_file": read_file,
             "write_file": write_file,
-            "execute_bash": execute_bash
+            "execute_bash": execute_bash,
+            "search_code": search_code,
+            "edit_file": edit_file
         }
     
     def run(self, user_prompt: str):

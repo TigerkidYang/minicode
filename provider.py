@@ -18,7 +18,7 @@ class LLMProvider:
         )
 
         # Model
-        self.default_model = "z-ai/glm-5"
+        self.default_model = "google/gemini-3-flash-preview"
 
     def chat(self, messages : list, tools : list = None):
 
@@ -38,4 +38,3 @@ class LLMProvider:
 
         # Return the core response
         return response.choices[0].message
-
