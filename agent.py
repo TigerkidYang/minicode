@@ -9,17 +9,14 @@ from tools.search import search_code, SEARCH_TOOL
 from tools.edit import edit_file, EDIT_FILE_TOOL
 
 from prompts import SYSTEM_PROMPT
+from memory.manager import MemoryManager
 
 class MinicodeAgent:
     
     def __init__(self):
         self.provider = LLMProvider()
-
-        self.system_prompt = SYSTEM_PROMPT
-
-        self.messages = [
-            {"role": "system", "content": self.system_prompt}
-        ]
+        self.memory = MemoryManager(SYSTEM_PROMPT)
+        self.memory.load_session()
 
         self.tools = [READ_FILE_TOOL, WRITE_FILE_TOOL, BASH_TOOL, SEARCH_TOOL, EDIT_FILE_TOOL]
 
@@ -32,17 +29,19 @@ class MinicodeAgent:
         }
     
     def run(self, user_prompt: str):
-        self.messages.append({"role": "user", "content": user_prompt})
+        self.memory.add_message({"role": "user", "content": user_prompt})
+        self.memory.save_session()
 
         while True:
+            self.memory.step(self.provider)
             print("Thinking...", end="\r", flush=True)
 
-            message = self.provider.chat(self.messages, self.tools)
+            message = self.provider.chat(self.memory.get_context(), self.tools)
 
-            print("           ", end='\r', flush=True)
+            print("           ", end="\r", flush=True)
 
             if message.tool_calls:
-                self.messages.append(message)
+                self.memory.add_message(message)
 
                 for tool_call in message.tool_calls:
                     func_name = tool_call.function.name
@@ -55,16 +54,16 @@ class MinicodeAgent:
                     else:
                         result = f"Error: {func_name} not found."
 
-                    self.messages.append({
+                    self.memory.add_message({
                         "role": "tool",
                         "tool_call_id": tool_call.id,
                         "content": result
                     })
+                    self.memory.save_session()
                 continue
-            else:
-                reply = message.content
-                print(f"MiniCode:\n{reply}\n")
-                self.messages.append({"role":"assistant", "content": reply})
-                break
 
-                             
+            reply = message.content
+            print(f"MiniCode:\n{reply}\n")
+            self.memory.add_message({"role":"assistant", "content": reply})
+            self.memory.save_session()
+            break
