@@ -1,6 +1,6 @@
 from memory.summary import summarize_memory
 
-def compact_if_needed(provider, working_memory: list, current_summary: str, max_messages: int = 15, keep_recent: int = 10):
+def compact_if_needed(provider, working_memory: list, current_summary: str, max_messages: int = 100, keep_recent: int = 30):
 
     if len(working_memory) <= max_messages:
         return working_memory, current_summary

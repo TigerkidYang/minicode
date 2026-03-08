@@ -1,32 +1,46 @@
 import json
 import os
 from memory.compaction import compact_if_needed
+from tools.plan import format_plan
+
 
 class MemoryManager:
-    def __init__(self, system_prompt: str, max_messages: int = 15):
+    def __init__(self, system_prompt: str, max_messages: int = 100):
         self.system_prompt = {"role": "system", "content": system_prompt}
         self.summary = ""
+        self.plan = []
         self.working_memory = []
         self.max_messages = max_messages
 
     def add_message(self, message):
         self.working_memory.append(message)
 
+    def set_plan(self, items: list):
+        self.plan = [dict(item) for item in items]
+
     def get_context(self) -> list:
         context = [self.system_prompt]
+
         if self.summary:
             context.append({
                 "role": "system",
                 "content": f"[SYSTEM NOTE - PREVIOUS CONTEXT SUMMARY]\n{self.summary}"
             })
+
+        if self.plan:
+            context.append({
+                "role": "system",
+                "content": f"[SYSTEM NOTE - CURRENT PLAN]\n{format_plan(self.plan)}"
+            })
+
         context.extend(self.working_memory)
         return context
 
     def step(self, provider):
         self.working_memory, self.summary = compact_if_needed(
-            provider, 
-            self.working_memory, 
-            self.summary, 
+            provider,
+            self.working_memory,
+            self.summary,
             self.max_messages
         )
 
@@ -36,8 +50,9 @@ class MemoryManager:
         try:
             dump_data = {
                 "summary": self.summary,
+                "plan": self.plan,
                 "working_memory": [
-                    msg if isinstance(msg, dict) else msg.model_dump() 
+                    msg if isinstance(msg, dict) else msg.model_dump()
                     for msg in self.working_memory
                 ]
             }
@@ -54,6 +69,8 @@ class MemoryManager:
             with open(filepath, "r", encoding="utf-8") as f:
                 data = json.load(f)
                 self.summary = data.get("summary", "")
+                loaded_plan = data.get("plan", [])
+                self.plan = loaded_plan if isinstance(loaded_plan, list) else []
                 self.working_memory = data.get("working_memory", [])
             print(f"[Memory] Session '{session_id}' loaded.")
         except Exception:
