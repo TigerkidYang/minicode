@@ -59,6 +59,7 @@ All five implementation steps, root/live verification, and independent archive
 verification are complete. See `docs/reports/v16-verification.md`.
 
 The later authorized V16 maintenance evaluation is also complete. Fix 4 with
-`gpt-5.6-luna`, max reasoning, and k=1 scored 61/89 (68.54%) on
-Terminal-Bench 2.1 with 89 valid outcomes and no final infrastructure failure.
-See `docs/reports/terminal-bench-2.1-k1-v16.md`.
+`gpt-5.6-luna`, max reasoning, and k=5 scored 305/445 (68.54%) on
+Terminal-Bench 2.1 with five valid trajectories for each of 89 tasks and no
+accepted infrastructure failure. See
+`docs/reports/terminal-bench-2.1-k5-v16.md`.
