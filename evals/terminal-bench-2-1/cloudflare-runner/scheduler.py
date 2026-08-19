@@ -24,7 +24,7 @@ STATE_PATH = RUN_DIR / "state.json"
 EVENTS_PATH = RUN_DIR / "events.jsonl"
 BASE = "https://coding-kid-terminal-bench-runner.runchangyang.workers.dev"
 HOST = "coding-kid-terminal-bench-runner.runchangyang.workers.dev"
-RESOLVE = f"{HOST}:443:104.21.77.50"
+RESOLVE_IP = os.environ.get("CODING_KID_BENCH_RESOLVE_IP", "").strip()
 MODEL_URL = os.environ.get(
     "CODING_KID_BENCH_MODEL_URL",
     "https://alien-nat-office-sir.trycloudflare.com/v1/models",
@@ -97,11 +97,11 @@ def curl_json(path: str, *, body: dict[str, str] | None = None) -> dict[str, Any
         "--fail-with-body",
         "--max-time",
         "120",
-        "--resolve",
-        RESOLVE,
         "-H",
         f"Authorization: Bearer {token}",
     ]
+    if RESOLVE_IP:
+        command.extend(["--resolve", f"{HOST}:443:{RESOLVE_IP}"])
     if body is not None:
         command.extend(
             [
@@ -159,6 +159,12 @@ def trial_id(task: str, attempt: int) -> str:
 
 def initial_state(tasks: list[str]) -> dict[str, Any]:
     return {
+        "run_id": RUN_ID,
+        "replicate": int(os.environ.get("CODING_KID_BENCH_REPLICATE", "0")),
+        "dataset": "terminal-bench-2.1",
+        "model": "gpt-5.6-luna",
+        "reasoning_effort": "max",
+        "agent_version": "v16-explicit-maintenance-fix4",
         "created_at": now(),
         "target_concurrency": INITIAL_CONCURRENCY,
         "last_ramp_at": time.time(),
