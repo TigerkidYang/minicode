@@ -14,16 +14,12 @@ and a full-screen terminal interface:
 >
 > That is **about 90.5% of Codex's benchmark score** from a deliberately small,
 > educational implementation. See the
-> [detailed evaluation report](docs/reports/terminal-bench-2.1-k1-v16.md) for
+> [detailed evaluation report](docs/reports/terminal-bench-2.1-k5-v16.md) for
 > the complete protocol, evidence, infrastructure controls, and comparability
 > limits.
 >
-> <sub>Methodology note: Coding Kid ran each task once; the official Codex
-> submission ran each task five times.</sub>
->
-> <sub>Why only Luna—and why only one run per task? Because I am,
-> scientifically speaking, broke. We will keep improving the Agent, and when
-> the budget catches up, we will run a broader evaluation too.</sub>
+> <sub>Methodology note: Coding Kid ran five valid trajectories per task. The
+> 68.54% result is the mean over 445 outcomes, not pass@5.</sub>
 
 ```text
 session context + project instructions + Skill metadata + recalled memory
@@ -82,9 +78,9 @@ review evidence as `/changes`, and unfinished todos are visible resumable state
 rather than a fatal completion gate.
 
 The authorized Terminal-Bench 2.1 evaluation of the maintained V16 fix 4
-runtime completed all 89 tasks with no final infrastructure failure and scored
-61/89 (68.54%). The detailed report linked above records the full methodology
-and its limitations.
+runtime completed five valid trajectories for each of 89 tasks, with no
+accepted infrastructure failure, and scored 305/445 (68.54%). The detailed
+report linked above records the full methodology and its limitations.
 
 ## Version 15 Maintenance Release
 
