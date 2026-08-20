@@ -135,4 +135,3 @@ committed as source artifacts. The continuation runner is
 - Task-set audit: five identical 89-task sets.
 - Completion audit: 445/445 completed with valid binary rewards.
 - Cleanup audit: 445/445 trial containers stopped.
-
